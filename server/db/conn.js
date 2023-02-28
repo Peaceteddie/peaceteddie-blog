@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+const { MongoClient } = require("mongodb");
 
 const Db = process.env.ATLAS_URI;
 const client = new MongoClient(Db, {
@@ -8,15 +8,22 @@ const client = new MongoClient(Db, {
 
 var _db;
 
-export function connectToServer(callback) {
-  client.connect(function (err, db) {
-    if (db) {
-      _db = db.db("Blog");
-      console.log("Successfully connected to MongoDB.");
-    }
-    return callback(err);
-  });
-}
-export function getDb() {
-  return _db;
-}
+module.exports = {
+  connectToServer: function (callback) {
+    client.connect().then(
+      (db) => {
+        if (db) {
+          _db = db.db("Blog");
+          console.log(
+            "Successfully connected to MongoDB and " + _db.databaseName
+          );
+        }
+      },
+      (err) => console.log(err)
+    );
+  },
+
+  getDb: function () {
+    return _db;
+  },
+};
