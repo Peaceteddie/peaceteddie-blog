@@ -22,7 +22,7 @@ export default function PostList() {
     <Center>
       <VStack rowGap={5}>
         {posts.map((post) => (
-          <Post post={post} />
+          <Post post={post} key={post["_id"]} />
         ))}
       </VStack>
     </Center>
