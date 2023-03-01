@@ -1,24 +1,46 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/react";
 
 export function Post({ post }: any) {
-  function created() {
-    let date = new Date(post.created).toUTCString();
-    return "Created: " + (date == "Invalid Date" ? "Long time ago" : date);
-  }
+	let sBlur = "1px";
+	let sLength = "-2px";
+	let sStretch = "-1px";
 
-  return (
-    <Card>
-      <CardHeader bgColor={"blackAlpha.600"}>{created()}</CardHeader>
-      <CardBody>
-        <img
-          src="https://via.placeholder.com/800x500"
-          loading="lazy"
-          height={"500"}
-          width={"800"}
-        />
-        {post.content}
-      </CardBody>
-      <CardFooter bgColor={"blackAlpha.300"}>{post.author}</CardFooter>
-    </Card>
-  );
+	let bRadius = "8px";
+	let bShadow = `0 ${sLength} ${sBlur} black inset, 0 ${sLength} ${sBlur} ${sStretch} white`;
+
+	function created() {
+		let date = new Date(post.created).toUTCString();
+		return "Created: " + (date === "Invalid Date" ? "Long time ago" : date);
+	}
+
+	return (
+		<Card
+			rowGap={".1rem"}
+			minHeight={"20rem"}
+			minWidth={"35rem"}
+			borderRadius={bRadius}
+		>
+			<CardHeader
+				bgColor={"teal.600"}
+				borderRadius={bRadius}
+				boxShadow={bShadow}
+			>
+				{post.author}
+			</CardHeader>
+			<CardBody
+				bgColor={"teal.700"}
+				borderRadius={bRadius}
+				boxShadow={bShadow}
+			>
+				{post.content}
+			</CardBody>
+			<CardFooter
+				bgColor={"teal.800"}
+				borderRadius={bRadius}
+				boxShadow={bShadow}
+			>
+				{created()}
+			</CardFooter>
+		</Card>
+	);
 }

@@ -1,16 +1,17 @@
-const express = require("express");
+import { cors } from "cors";
+import { express } from "express";
+import { postRoutes } from "./routes/post";
+import { connectToServer } from "./db/conn";
+
 const app = express();
-const cors = require("cors");
+app.use(express.json());
+app.use(postRoutes);
+app.use(cors());
+
 require("dotenv").config({ path: "./config.env" });
 const port = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(express.json());
-app.use(require("./routes/post"));
-const dbo = require("./db/conn");
-
 app.listen(port, () => {
-  // perform a database connection when server starts
-  dbo.connectToServer();
-  console.log(`Server is running on port: ${port}`);
+	connectToServer();
+	console.log(`Server is running on port: ${port}`);
 });
