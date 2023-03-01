@@ -17,6 +17,7 @@
     "@types/react-dom": "^18.0.11",
     "firebase": "^9.17.1",
     "framer-motion": "^6.5.1",
+    "nodemon": "^2.0.20",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^3.11.0",
