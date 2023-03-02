@@ -1,0 +1,38 @@
+$sizeShadow: 0 2px 2px -2px;
+$topShadow: $sizeShadow #fff inset;
+$shadow: $topShadow, $sizeShadow #000;
+
+.login,
+.login::placeholder {
+	transition: all 150ms;
+}
+input.login {
+	border-color: #aaa;
+	border-radius: 15px;
+	border-width: 0.2rem;
+	padding: 0.5rem;
+	width: 20rem;
+}
+input.login::placeholder {
+	color: #aaa;
+}
+input.login:hover::placeholder {
+	color: #fff;
+}
+input.login:focus::placeholder {
+	color: #cfc;
+}
+button.login {
+	border-radius: 10px;
+	box-shadow: $shadow;
+	padding: 0.5rem !important;
+	width: 20rem;
+}
+button.login:hover {
+	box-shadow: $topShadow, 0 4px 2px -2px #f00;
+	transform: translateY(-2px);
+}
+button.login:active {
+	box-shadow: none;
+	transform: translateY(2px);
+}

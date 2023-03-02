@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { Center, Heading, VStack } from "@chakra-ui/layout";
+import useStyles from "../styles/style_login";
+import "../styles/style_login.scss";
 
 export default function LoginPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
+	const { buttonStyle, inputStyle } = useStyles();
 
 	const navigate = useNavigate();
 
@@ -19,23 +23,34 @@ export default function LoginPage() {
 	}
 
 	return (
-		<>
-			<h1>Log In</h1>
-			{error && <p>{error}</p>}
-			<input
-				type="email"
-				placeholder="Your email address"
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
-			/>
-			<input
-				type="password"
-				placeholder="Your password"
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
-			/>
-			<button onClick={logIn}>Log In</button>
-			<Link to="/register">Create Account</Link>
-		</>
+		<Center>
+			<VStack rowGap={5}>
+				<Heading m={10}>Log In</Heading>
+				{error && <p>{error}</p>}
+				<input
+					className="login"
+					type="email"
+					placeholder="Your email address"
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					style={inputStyle}
+				/>
+				<input
+					className="login"
+					type="password"
+					placeholder="Your password"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					style={inputStyle}
+				/>
+				<button
+					className="login"
+					onClick={logIn}
+					style={buttonStyle}
+				>
+					Log In
+				</button>
+			</VStack>
+		</Center>
 	);
 }
