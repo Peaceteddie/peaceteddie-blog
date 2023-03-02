@@ -1,5 +1,5 @@
 import { ChakraProvider, theme } from "@chakra-ui/react";
-import { ColorModeSwitcher } from "./ColorModeSwitcher";
+import { ColorModeSwitcher } from "./components/ColorModeSwitcher";
 import { UpButton } from "./components/UpButton";
 import { TopNavBar } from "./components/TopNavBar";
 import { Outlet } from "react-router-dom";

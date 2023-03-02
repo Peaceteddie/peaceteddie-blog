@@ -10,9 +10,10 @@ import {
 } from "react-router-dom";
 import PostList from "./components/PostList";
 import { initializeApp } from "firebase/app";
-import LoginPage from "./pages/LoginPage";
-import CreateAccountPage from "./pages/CreateAccountPage";
+import LoginPage from "./components/LoginPage";
 import "./styles/index.scss";
+import CreatePost from "./components/CreatePost";
+
 const firebaseConfig = {
 	apiKey: "AIzaSyB436ppWgG3adw6aef8zv1fo34UT2uOtJ0",
 	authDomain: "peaceteddie-blog.firebaseapp.com",
@@ -31,16 +32,16 @@ const router = createBrowserRouter(
 			element={<App />}
 		>
 			<Route
+				path={"create"}
+				element={<CreatePost />}
+			/>
+			<Route
 				path={"posts"}
 				element={<PostList />}
 			/>
 			<Route
-				path={"/login"}
+				path={"login"}
 				element={<LoginPage />}
-			/>
-			<Route
-				path={"/register"}
-				element={<CreateAccountPage />}
 			/>
 		</Route>
 	)
