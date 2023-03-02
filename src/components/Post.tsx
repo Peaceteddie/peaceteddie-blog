@@ -1,45 +1,60 @@
-import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/react";
+import {
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
+	Flex,
+	useColorModeValue,
+} from "@chakra-ui/react";
+import ReactMarkdown from "react-markdown";
 
 export function Post({ post }: any) {
-	let sBlur = "1px";
-	let sLength = "-2px";
-	let sStretch = "-1px";
-
-	let bRadius = "8px";
-	let bShadow = `0 ${sLength} ${sBlur} black inset, 0 ${sLength} ${sBlur} ${sStretch} white`;
+	const textColor = useColorModeValue("white", "white");
 
 	function created() {
-		let date = new Date(post.created).toUTCString();
-		return "Created: " + (date === "Invalid Date" ? "Long time ago" : date);
+		let date = new Date(post.created);
+		return (
+			"Created: " +
+			(date.toString() === "Invalid Date"
+				? "Long time ago"
+				: date.toLocaleDateString())
+		);
 	}
 
 	return (
 		<Card
-			rowGap={".1rem"}
-			minHeight={"20rem"}
+			color={textColor}
 			minWidth={"35rem"}
-			borderRadius={bRadius}
+			padding={2}
 		>
 			<CardHeader
 				bgColor={"teal.600"}
-				borderRadius={bRadius}
-				boxShadow={bShadow}
+				borderTopRadius={".3rem"}
+				boxShadow={"0 1px white inset"}
+				color={textColor}
 			>
-				{post.author}
+				<h2>{post.language}</h2>
 			</CardHeader>
 			<CardBody
 				bgColor={"teal.700"}
-				borderRadius={bRadius}
-				boxShadow={bShadow}
+				color={textColor}
+				paddingBlock={"2rem"}
 			>
-				{post.content}
+				<ReactMarkdown>{post.content}</ReactMarkdown>
 			</CardBody>
 			<CardFooter
 				bgColor={"teal.800"}
-				borderRadius={bRadius}
-				boxShadow={bShadow}
+				borderBottomRadius={".3rem"}
+				boxShadow={"0 -1px black inset"}
+				color={textColor}
 			>
-				{created()}
+				<Flex grow={1}>{created()}</Flex>
+				<Flex
+					grow={1}
+					justify={"end"}
+				>
+					{post.author}
+				</Flex>
 			</CardFooter>
 		</Card>
 	);

@@ -14,22 +14,8 @@ export default function PostList() {
 			.then((res: Response) => {
 				res.json().then((items) => setPosts(items));
 			})
-			.catch(() => {
-				let items: any = [
-					{
-						author: "Peaceteddie",
-						content: "Another sunny day in paradise",
-					},
-					{
-						author: "Gandalf",
-						content: "You shall not pass",
-					},
-					{
-						author: "Frodo",
-						content: "I Shall Not Tell Lies",
-					},
-				];
-				setPosts(items);
+			.catch((error) => {
+				console.log(error.message);
 			});
 	}
 

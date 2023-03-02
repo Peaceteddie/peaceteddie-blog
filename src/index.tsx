@@ -12,6 +12,7 @@ import PostList from "./components/PostList";
 import { initializeApp } from "firebase/app";
 import LoginPage from "./pages/LoginPage";
 import CreateAccountPage from "./pages/CreateAccountPage";
+import "./styles/index.scss";
 const firebaseConfig = {
 	apiKey: "AIzaSyB436ppWgG3adw6aef8zv1fo34UT2uOtJ0",
 	authDomain: "peaceteddie-blog.firebaseapp.com",
