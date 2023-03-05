@@ -1,10 +1,15 @@
-import { HStack, Center } from "@chakra-ui/react";
+import { Center, HStack } from "@chakra-ui/react";
+import { getAuth, signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
 import useUser from "../hooks/useUser";
 
 export function TopNavBar() {
 	const { user, isLoading } = useUser();
-	function Logout() {}
+
+	const Logout = () =>
+		signOut(getAuth())
+			.then((value) => {})
+			.catch((error) => {});
 
 	return (
 		<nav>

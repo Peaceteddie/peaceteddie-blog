@@ -3,6 +3,7 @@ import {
 	CardBody,
 	CardFooter,
 	CardHeader,
+	Divider,
 	Flex,
 	useColorModeValue,
 } from "@chakra-ui/react";
@@ -40,6 +41,11 @@ export function Post({ post }: any) {
 				color={textColor}
 				paddingBlock={"2rem"}
 			>
+				<h2>{post.title}</h2>
+				<Divider
+					marginBottom={"1rem"}
+					marginTop={".2rem"}
+				/>
 				<ReactMarkdown>{post.content}</ReactMarkdown>
 			</CardBody>
 			<CardFooter
