@@ -1,20 +1,36 @@
-import { Center, Flex, useColorModeValue } from "@chakra-ui/react";
+import { Center, Image } from "@chakra-ui/react";
 import anime from "animejs/lib/anime.es";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function Home() {
+	const multi = 2;
 	const [dotMargin] = useState(10);
-	const [duration] = useState(200);
+	const [duration] = useState(100);
 	const [dotSize] = useState(10);
-	const [grid] = useState([60, 10]);
-	const dotColor = useColorModeValue("black", "white");
+	const [grid] = useState([16 * multi, 9 * multi]);
 
 	var animation: any = useRef(null);
 	var numberOfElements = useMemo(() => grid[0] * grid[1], [grid]);
 	var index = anime.random(0, numberOfElements - 1);
 
+	const images = [
+		"https://cdn.pixabay.com/photo/2023/01/21/13/39/night-sky-7733876_960_720.jpg",
+		"https://cdn.pixabay.com/photo/2023/02/13/10/30/eye-7787024_1280.jpg",
+		"https://cdn.pixabay.com/photo/2023/01/23/09/26/cat-7738210_1280.jpg",
+	];
+
+	var toShow = 0;
+	var opacity = false;
 	var nextIndex = 0;
+	var imgs: NodeListOf<Element>;
+
 	function play() {
+		if (opacity) {
+			UpdateImages();
+		}
+
+		opacity = !opacity;
+		toShow = anime.random(0, images.length - 1);
 		nextIndex = anime.random(0, numberOfElements - 1);
 
 		animation.current = anime
@@ -26,36 +42,38 @@ export default function Home() {
 				targets: ".dot",
 				keyframes: [
 					{
-						translateX: anime.stagger("-1px", {
+						height: anime.stagger(
+							[dotMargin + dotSize, (dotMargin + dotSize) / 2],
+							{
+								grid: grid,
+								from: index,
+							}
+						),
+						width: anime.stagger(
+							[dotMargin + dotSize, (dotMargin + dotSize) / 2],
+							{
+								grid: grid,
+								from: index,
+							}
+						),
+						/* r: anime.stagger(
+							[dotMargin + dotSize, (dotMargin + dotSize) / 2],
+							{
+								grid: grid,
+								from: index,
+							}
+						), */
+						opacity: anime.stagger([opacity ? 0 : 1, opacity ? 1 : 0], {
 							grid: grid,
 							from: index,
-							axis: "x",
-						}),
-						translateY: anime.stagger("-1px", {
-							grid: grid,
-							from: index,
-							axis: "y",
 						}),
 						duration: duration,
 					},
 					{
-						translateX: anime.stagger("1px", {
-							grid: grid,
-							from: index,
-							axis: "x",
-						}),
-						translateY: anime.stagger("1px", {
-							grid: grid,
-							from: index,
-							axis: "y",
-						}),
-						scale: anime.stagger([3, 1], { grid: grid, from: index }),
-						duration: duration,
-					},
-					{
-						translateX: 0,
-						translateY: 0,
-						scale: 1,
+						//r: (dotMargin + dotSize) / 2,
+						height: dotMargin + dotSize,
+						width: dotMargin + dotSize,
+						opacity: opacity ? 0 : 1,
 						duration: duration,
 					},
 				],
@@ -65,8 +83,21 @@ export default function Home() {
 		index = nextIndex;
 	}
 
+	function UpdateImages() {
+		imgs.forEach((x, key) => {
+			if (key === toShow) {
+				(x as HTMLElement).hidden = false;
+			} else {
+				(x as HTMLElement).hidden = true;
+			}
+		});
+	}
+
 	useEffect(() => {
 		if (anime.running.length > 0) return;
+
+		imgs = document.querySelectorAll(".clip-image");
+		UpdateImages();
 		play();
 	}, [null]);
 
@@ -76,22 +107,57 @@ export default function Home() {
 			width="100%"
 		>
 			<Center
-				flexWrap={"wrap"}
-				width={(dotMargin + dotMargin + dotSize) * grid[0] + "px"}
+				alignContent={"center"}
+				alignItems={"center"}
+				alignSelf={"center"}
+				justifyContent={"center"}
+				justifyItems={"center"}
+				justifySelf={"center"}
+				height="100%"
+				width="100%"
 			>
-				{[...Array(numberOfElements)].map((value, index) => (
-					<Flex
-						className="dot"
+				{[...images].map((value, index) => (
+					<Image
+						className="clip-image"
+						clipPath={"url(#dot)"}
+						left="25%"
+						loading={"eager"}
 						key={index}
-						bgColor={dotColor}
-						borderRadius={"50%"}
-						height={dotSize + "px"}
-						margin={dotMargin + "px"}
-						padding={"0"}
-						position={"relative"}
-						width={dotSize + "px"}
-					></Flex>
+						position={"absolute"}
+						src={value}
+						zIndex="-1"
+					></Image>
 				))}
+				<svg
+					height={(dotMargin * 2 + dotSize) * grid[0]}
+					width={(dotMargin * 2 + dotSize) * grid[1]}
+					viewBox={`0 0 ${dotSize} ${dotSize}`}
+				>
+					<clipPath
+						id="dot"
+						opacity={1}
+					>
+						{[...Array(numberOfElements)].map((value, index) => (
+							<rect
+								className="dot"
+								x={
+									dotMargin +
+									dotSize +
+									(dotMargin * 2 + dotSize) * (index % grid[0])
+								}
+								y={
+									dotMargin +
+									dotSize +
+									(dotMargin * 2 + dotSize) * Math.floor(1 + index / grid[0])
+								}
+								key={index}
+								height={dotMargin + dotSize}
+								width={dotMargin + dotSize}
+								/* r={(dotMargin + dotSize) / 2} */
+							/>
+						))}
+					</clipPath>
+				</svg>
 			</Center>
 		</Center>
 	);
