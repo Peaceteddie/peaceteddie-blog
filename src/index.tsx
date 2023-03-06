@@ -13,6 +13,7 @@ import { initializeApp } from "firebase/app";
 import LoginPage from "./components/LoginPage";
 import "./styles/index.scss";
 import CreatePost from "./components/CreatePost";
+import Home from "./components/Home";
 
 const firebaseConfig = {
 	apiKey: "AIzaSyB436ppWgG3adw6aef8zv1fo34UT2uOtJ0",
@@ -31,6 +32,11 @@ const router = createBrowserRouter(
 			path="/"
 			element={<App />}
 		>
+			<Route
+				index
+				element={<Home />}
+			/>
+			,
 			<Route
 				path={"create"}
 				element={<CreatePost />}

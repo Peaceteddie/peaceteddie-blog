@@ -10,7 +10,7 @@ import {
 	Select,
 	Show,
 	Text,
-	Textarea,
+	Textarea
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -19,31 +19,27 @@ import { useNavigate } from "react-router-dom";
 import useUser from "../hooks/useUser";
 
 export default function CreatePost() {
-	const OGValue = 0.7;
-	const interval = 100;
-
 	const { user } = useUser();
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 	const [language, setLanguage] = useState("");
 	const [error, setError] = useState("");
-	const [alpha, setAlpha] = useState(OGValue);
+	const [lastError, setLastError] = useState("");
+	const [color, setColor] = useState("gray.900");
+	const [delay, setDelay] = useState("0s");
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (!error) return;
-		const amount = OGValue / interval;
-		const inter = setInterval(() => {
-			setAlpha((alpha) => {
-				return alpha - amount;
-			});
-		}, 1000 / interval);
+		setDelay("0s");
+		setLastError(error);
+		setColor("red.900");
 		const timeout = setTimeout(() => {
 			clearTimeout(timeout);
-			clearInterval(inter);
-			setAlpha(OGValue);
+			setColor("gray.900");
+			setDelay("500ms");
 			setError("");
-		}, 1000);
+		}, 200);
 	}, [error]);
 
 	if (!user) return null;
@@ -90,17 +86,14 @@ export default function CreatePost() {
 			paddingInline={"5rem"}
 		>
 			<InputGroup
-				bgColor={
-					error
-						? "rgba(" + (255 - (1 - alpha)) + ",50,50," + alpha + ")"
-						: "gray.900"
-				}
+				bgColor={color}
 				display="flex"
 				flexDirection={"column"}
 				height={{ base: "50%", lg: "100%" }}
 				justifyContent={"space-between"}
 				padding={"1rem"}
 				rowGap={{ lg: "1rem", base: ".5rem" }}
+				transition={"all ease " + delay}
 				width={{ lg: "50%", base: "100%" }}
 			>
 				<Text
@@ -109,10 +102,10 @@ export default function CreatePost() {
 				>
 					Author: {author}
 				</Text>
+				<Text align={"center"}>{lastError}</Text>
 				<FormLabel>
 					Title:
 					<Input
-						id="post-title"
 						onChange={(e) => setTitle(e.target.value)}
 						type="text"
 						value={title}
@@ -142,7 +135,6 @@ export default function CreatePost() {
 					<FormLabel flexGrow={1}>
 						Post:
 						<Textarea
-							id="post-content"
 							height={"90%"}
 							onChange={(e) => setContent(e.target.value)}
 							resize={"none"}
@@ -150,12 +142,7 @@ export default function CreatePost() {
 						/>
 					</FormLabel>
 				</Flex>
-				<Button
-					id="post-submit"
-					onClick={onSubmit}
-				>
-					Add Post
-				</Button>
+				<Button onClick={onSubmit}>Add Post</Button>
 			</InputGroup>
 			<Show above={"lg"}>
 				<Divider orientation={"vertical"} />
