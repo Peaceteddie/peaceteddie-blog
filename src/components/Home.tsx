@@ -4,29 +4,38 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function Home() {
 	const multi = 2;
-	const [dotMargin] = useState(10);
-	const [duration] = useState(100);
-	const [dotSize] = useState(10);
+	const [dotSize] = useState(40);
+	const [duration] = useState(130);
 	const [grid] = useState([16 * multi, 9 * multi]);
 
-	var animation: any = useRef(null);
-	var numberOfElements = useMemo(() => grid[0] * grid[1], [grid]);
-	var index = anime.random(0, numberOfElements - 1);
-
 	const images = [
-		"https://cdn.pixabay.com/photo/2023/01/21/13/39/night-sky-7733876_960_720.jpg",
+		"https://cdn.pixabay.com/photo/2023/01/21/13/39/night-sky-7733876_1280.jpg",
 		"https://cdn.pixabay.com/photo/2023/02/13/10/30/eye-7787024_1280.jpg",
 		"https://cdn.pixabay.com/photo/2023/01/23/09/26/cat-7738210_1280.jpg",
+		"https://cdn.pixabay.com/photo/2022/11/21/12/24/swan-7606921_1280.jpg",
+		"https://cdn.pixabay.com/photo/2021/10/01/18/53/corgi-6673343_1280.jpg",
+		"https://cdn.pixabay.com/photo/2023/01/30/23/09/bird-7756768_1280.jpg",
+		"https://cdn.pixabay.com/photo/2023/01/21/02/40/cat-7732877_1280.jpg",
 	];
 
 	var toShow = 0;
 	var opacity = false;
 	var nextIndex = 0;
-	var imgs: NodeListOf<Element>;
+
+	var animation: any = useRef(null);
+	var numberOfElements = useMemo(() => grid[0] * grid[1], [grid]);
+
+	var imgs = {} as HTMLCollectionOf<Element>;
+	var index = anime.random(0, numberOfElements - 1);
+
+	const GridFrom = {
+		grid: grid,
+		from: index,
+	};
 
 	function play() {
 		if (opacity) {
-			UpdateImages();
+			if (!UpdateImages()) return anime.remove(animation);
 		}
 
 		opacity = !opacity;
@@ -42,64 +51,53 @@ export default function Home() {
 				targets: ".dot",
 				keyframes: [
 					{
-						height: anime.stagger(
-							[dotMargin + dotSize, (dotMargin + dotSize) / 2],
-							{
-								grid: grid,
-								from: index,
-							}
+						width: anime.stagger([dotSize / 1.5, dotSize + 1], GridFrom),
+						height: anime.stagger([dotSize / 1.5, dotSize + 1], GridFrom),
+						opacity: anime.stagger(
+							[opacity ? 0 : 1, opacity ? 1 : 0],
+							GridFrom
 						),
-						width: anime.stagger(
-							[dotMargin + dotSize, (dotMargin + dotSize) / 2],
-							{
-								grid: grid,
-								from: index,
-							}
-						),
-						/* r: anime.stagger(
-							[dotMargin + dotSize, (dotMargin + dotSize) / 2],
-							{
-								grid: grid,
-								from: index,
-							}
-						), */
-						opacity: anime.stagger([opacity ? 0 : 1, opacity ? 1 : 0], {
-							grid: grid,
-							from: index,
-						}),
 						duration: duration,
 					},
 					{
-						//r: (dotMargin + dotSize) / 2,
-						height: dotMargin + dotSize,
-						width: dotMargin + dotSize,
+						width: dotSize + 1,
+						height: dotSize + 1,
 						opacity: opacity ? 0 : 1,
-						duration: duration,
+						duration: duration * (opacity ? 4 : 10),
+					},
+					{
+						duration: duration * (opacity ? 0 : 10),
 					},
 				],
-				delay: anime.stagger(duration / 2, { grid: grid, from: index }),
+				delay: anime.stagger(duration / (opacity ? 2 : 1), GridFrom),
 			});
 
 		index = nextIndex;
 	}
 
 	function UpdateImages() {
-		imgs.forEach((x, key) => {
-			if (key === toShow) {
-				(x as HTMLElement).hidden = false;
-			} else {
-				(x as HTMLElement).hidden = true;
-			}
-		});
+		if (!imgs[0]) {
+			return false;
+		}
+
+		for (let index = 0; index < imgs.length; index++) {
+			(imgs[index] as HTMLElement).hidden = index !== toShow;
+		}
+
+		return true;
+	}
+
+	function UpdateImgRefs() {
+		imgs = document.getElementsByClassName("clip-image");
 	}
 
 	useEffect(() => {
 		if (anime.running.length > 0) return;
-
-		imgs = document.querySelectorAll(".clip-image");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		UpdateImgRefs();
 		UpdateImages();
 		play();
-	}, [null]);
+	});
 
 	return (
 		<Center
@@ -120,7 +118,6 @@ export default function Home() {
 					<Image
 						className="clip-image"
 						clipPath={"url(#dot)"}
-						left="25%"
 						loading={"eager"}
 						key={index}
 						position={"absolute"}
@@ -129,9 +126,8 @@ export default function Home() {
 					></Image>
 				))}
 				<svg
-					height={(dotMargin * 2 + dotSize) * grid[0]}
-					width={(dotMargin * 2 + dotSize) * grid[1]}
-					viewBox={`0 0 ${dotSize} ${dotSize}`}
+					height={"0"}
+					width={"0"}
 				>
 					<clipPath
 						id="dot"
@@ -140,20 +136,11 @@ export default function Home() {
 						{[...Array(numberOfElements)].map((value, index) => (
 							<rect
 								className="dot"
-								x={
-									dotMargin +
-									dotSize +
-									(dotMargin * 2 + dotSize) * (index % grid[0])
-								}
-								y={
-									dotMargin +
-									dotSize +
-									(dotMargin * 2 + dotSize) * Math.floor(1 + index / grid[0])
-								}
+								x={dotSize * (index % grid[0])}
+								y={dotSize * Math.floor(1 + index / grid[0])}
+								height={1 + dotSize}
+								width={1 + dotSize}
 								key={index}
-								height={dotMargin + dotSize}
-								width={dotMargin + dotSize}
-								/* r={(dotMargin + dotSize) / 2} */
 							/>
 						))}
 					</clipPath>
