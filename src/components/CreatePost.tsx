@@ -10,7 +10,7 @@ import {
 	Select,
 	Show,
 	Text,
-	Textarea
+	Textarea,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -164,7 +164,12 @@ export default function CreatePost() {
 				padding={"2rem"}
 				width={{ lg: "50%", base: "100%" }}
 			>
-				<ReactMarkdown>{`# ` + title}</ReactMarkdown>
+				<h1>{language}</h1>
+				<Divider
+					marginBottom={"1rem"}
+					marginTop={".2rem"}
+				/>
+				<h2>{title}</h2>
 				<Divider
 					marginBottom={"1rem"}
 					marginTop={".2rem"}

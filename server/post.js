@@ -27,6 +27,7 @@ postRoutes.route("/posts/add").post(async (req, res) => {
 				author: req.body.author,
 				content: req.body.content,
 				created: Date.now(),
+				language: req.body.language,
 				title: req.body.title,
 			})
 			.then((value) => {

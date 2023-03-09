@@ -28,11 +28,6 @@ export default function Home() {
 	var imgs = {} as HTMLCollectionOf<Element>;
 	var index = anime.random(0, numberOfElements - 1);
 
-	const GridFrom = {
-		grid: grid,
-		from: index,
-	};
-
 	function play() {
 		if (opacity) {
 			if (!UpdateImages()) return anime.remove(animation);
@@ -41,6 +36,11 @@ export default function Home() {
 		opacity = !opacity;
 		toShow = anime.random(0, images.length - 1);
 		nextIndex = anime.random(0, numberOfElements - 1);
+
+		const GridFrom = {
+			grid: grid,
+			from: index,
+		};
 
 		animation.current = anime
 			.timeline({
@@ -66,10 +66,10 @@ export default function Home() {
 						duration: duration * (opacity ? 4 : 10),
 					},
 					{
-						duration: duration * (opacity ? 0 : 10),
+						duration: duration * (opacity ? 0 : 4),
 					},
 				],
-				delay: anime.stagger(duration / (opacity ? 2 : 1), GridFrom),
+				delay: anime.stagger(duration / (opacity ? 3 : 1), GridFrom),
 			});
 
 		index = nextIndex;
