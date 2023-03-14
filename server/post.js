@@ -1,4 +1,5 @@
 import express from "express";
+import { readdirSync } from "fs";
 import { getDb } from "./conn.js";
 
 function UnAuth(caller) {
@@ -6,6 +7,12 @@ function UnAuth(caller) {
 }
 
 const postRoutes = express.Router();
+
+postRoutes.route("/api/images").get((req, res) => {
+	let files = readdirSync("../public/assets");
+	files = files.map((value) => "/assets/" + value);
+	res.status(200).json({ images: files });
+});
 
 postRoutes.route("/posts").get(async (req, res) => {
 	await getDb()

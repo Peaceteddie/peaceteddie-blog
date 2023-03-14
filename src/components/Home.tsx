@@ -3,83 +3,28 @@ import anime from "animejs/lib/anime.es";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function Home() {
-	const multi = 2;
-	const [dotSize] = useState(40);
-	const [duration] = useState(130);
-	const [grid] = useState([16 * multi, 9 * multi]);
+	const multi = 1;
+	const divisor = 32;
+	const duration = 100;
+	const animation = useRef<anime.AnimeInstance | null>(null);
 
-	const images = [
-		"https://cdn.pixabay.com/photo/2023/01/21/13/39/night-sky-7733876_1280.jpg",
-		"https://cdn.pixabay.com/photo/2023/02/13/10/30/eye-7787024_1280.jpg",
-		"https://cdn.pixabay.com/photo/2023/01/23/09/26/cat-7738210_1280.jpg",
-		"https://cdn.pixabay.com/photo/2022/11/21/12/24/swan-7606921_1280.jpg",
-		"https://cdn.pixabay.com/photo/2021/10/01/18/53/corgi-6673343_1280.jpg",
-		"https://cdn.pixabay.com/photo/2023/01/30/23/09/bird-7756768_1280.jpg",
-		"https://cdn.pixabay.com/photo/2023/01/21/02/40/cat-7732877_1280.jpg",
-	];
+	const grid = [768 / divisor, 512 / divisor];
+	const elementCount = grid[0] * grid[1];
 
-	var toShow = 0;
+	const dotHeight = (multi * 512) / grid[1];
+	const dotWidth = (multi * 768) / grid[0];
+
 	var opacity = false;
-	var nextIndex = 0;
-
-	var animation: any = useRef(null);
-	var numberOfElements = useMemo(() => grid[0] * grid[1], [grid]);
-
+	var [images, setImages] = useState([]);
 	var imgs = {} as HTMLCollectionOf<Element>;
-	var index = anime.random(0, numberOfElements - 1);
-
-	function play() {
-		if (opacity) {
-			if (!UpdateImages()) return anime.remove(animation);
-		}
-
-		opacity = !opacity;
-		toShow = anime.random(0, images.length - 1);
-		nextIndex = anime.random(0, numberOfElements - 1);
-
-		const GridFrom = {
-			grid: grid,
-			from: index,
-		};
-
-		animation.current = anime
-			.timeline({
-				easing: "easeInOutQuad",
-				complete: play,
-			})
-			.add({
-				targets: ".dot",
-				keyframes: [
-					{
-						width: anime.stagger([dotSize / 1.5, dotSize + 1], GridFrom),
-						height: anime.stagger([dotSize / 1.5, dotSize + 1], GridFrom),
-						opacity: anime.stagger(
-							[opacity ? 0 : 1, opacity ? 1 : 0],
-							GridFrom
-						),
-						duration: duration,
-					},
-					{
-						width: dotSize + 1,
-						height: dotSize + 1,
-						opacity: opacity ? 0 : 1,
-						duration: duration * (opacity ? 4 : 10),
-					},
-					{
-						duration: duration * (opacity ? 0 : 4),
-					},
-				],
-				delay: anime.stagger(duration / (opacity ? 3 : 1), GridFrom),
-			});
-
-		index = nextIndex;
-	}
+	var index = anime.random(0, elementCount - 1);
 
 	function UpdateImages() {
 		if (!imgs[0]) {
-			return false;
+			return UpdateImgRefs();
 		}
 
+		let toShow = anime.random(0, imgs.length - 1);
 		for (let index = 0; index < imgs.length; index++) {
 			(imgs[index] as HTMLElement).hidden = index !== toShow;
 		}
@@ -89,40 +34,86 @@ export default function Home() {
 
 	function UpdateImgRefs() {
 		imgs = document.getElementsByClassName("clip-image");
+		return imgs.length > 0;
+	}
+
+	function Play() {
+		if (opacity && !UpdateImages()) return anime.remove(animation.current);
+
+		opacity = !opacity;
+
+		const GridFrom = {
+			grid: grid,
+			from: index,
+		};
+
+		index = anime.random(0, elementCount - 1);
+
+		animation.current = anime
+			.timeline({
+				easing: "easeInOutQuad",
+				complete: Play,
+			})
+			.add({
+				targets: ".dot",
+				keyframes: [
+					{
+						width: anime.stagger([dotWidth / 1.5, dotWidth + 1], GridFrom),
+						height: anime.stagger([dotHeight / 1.5, dotHeight + 1], GridFrom),
+						opacity: anime.stagger(
+							[opacity ? 0 : 1, opacity ? 1 : 0],
+							GridFrom
+						),
+						duration: duration,
+					},
+					{
+						width: dotWidth + 1,
+						height: dotHeight + 1,
+						opacity: opacity ? 0 : 1,
+						duration: duration * (opacity ? 4 : 10),
+					},
+					{
+						duration: duration * (opacity ? 0 : 10),
+					},
+				],
+				delay: anime.stagger(duration / (opacity ? 2 : 1), GridFrom),
+			});
 	}
 
 	useEffect(() => {
 		if (anime.running.length > 0) return;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+
+		fetch("/api/images").then((value) =>
+			value.json().then((json) => {
+				setImages(json.images);
+			})
+		);
+
 		UpdateImgRefs();
 		UpdateImages();
-		play();
+		Play();
 	});
 
 	return (
 		<Center
-			height="80vh"
-			width="100%"
+			backdropBlur={"5px"}
+			height={"80vh"}
+			width={"100%"}
 		>
 			<Center
-				alignContent={"center"}
-				alignItems={"center"}
-				alignSelf={"center"}
-				justifyContent={"center"}
-				justifyItems={"center"}
-				justifySelf={"center"}
 				height="100%"
 				width="100%"
 			>
 				{[...images].map((value, index) => (
 					<Image
-						className="clip-image"
+						className={"clip-image"}
 						clipPath={"url(#dot)"}
-						loading={"eager"}
+						height={512 * multi}
 						key={index}
+						objectFit={"cover"}
 						position={"absolute"}
 						src={value}
-						zIndex="-1"
+						width={768 * multi}
 					></Image>
 				))}
 				<svg
@@ -133,14 +124,14 @@ export default function Home() {
 						id="dot"
 						opacity={1}
 					>
-						{[...Array(numberOfElements)].map((value, index) => (
+						{[...Array(elementCount)].map((_value, index) => (
 							<rect
-								className="dot"
-								x={dotSize * (index % grid[0])}
-								y={dotSize * Math.floor(1 + index / grid[0])}
-								height={1 + dotSize}
-								width={1 + dotSize}
 								key={index}
+								className="dot"
+								x={dotWidth * (index % grid[0])}
+								y={dotHeight * Math.floor(1 + index / grid[0])}
+								height={1 + dotHeight}
+								width={1 + dotWidth}
 							/>
 						))}
 					</clipPath>
