@@ -1,12 +1,20 @@
-import { Center, Image } from "@chakra-ui/react";
+import { Box, Center, Image, useColorModeValue } from "@chakra-ui/react";
 import anime from "animejs/lib/anime.es";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
 	const multi = 1;
 	const divisor = 32;
 	const duration = 100;
 	const animation = useRef<anime.AnimeInstance | null>(null);
+	const OverlayBox = useColorModeValue(
+		"hsla(0, 100%, 95%, 100%)",
+		"hsla(0, 100%, 95%, 10%)"
+	);
+	const ThemeShadow =
+		"0px 5px 10px 0px black, 0px 2px 5px 0px lightgray inset, 0px -2px 5px 0px black inset";
+	const ReverseShadow =
+		"2px 3px 5px 0px black inset, -2px -3px 5px 0px black inset";
 
 	const grid = [768 / divisor, 512 / divisor];
 	const elementCount = grid[0] * grid[1];
@@ -96,7 +104,6 @@ export default function Home() {
 
 	return (
 		<Center
-			backdropBlur={"5px"}
 			height={"80vh"}
 			width={"100%"}
 		>
@@ -104,11 +111,32 @@ export default function Home() {
 				height="100%"
 				width="100%"
 			>
+				<Box
+					backgroundColor={OverlayBox}
+					backdropBlur={"100px"}
+					borderRadius={"20px"}
+					boxShadow={ThemeShadow}
+					height={32 + 512 * multi}
+					opacity={".5"}
+					width={32 + 768 * multi}
+				></Box>
+				<Box
+					backgroundColor={OverlayBox}
+					backdropBlur={"100px"}
+					borderRadius={"20px"}
+					boxShadow={ReverseShadow}
+					height={3 + 512 * multi}
+					opacity={".5"}
+					position={"absolute"}
+					width={3 + 768 * multi}
+				></Box>
 				{[...images].map((value, index) => (
 					<Image
+						borderRadius={"20px"}
 						className={"clip-image"}
 						clipPath={"url(#dot)"}
 						height={512 * multi}
+						hidden
 						key={index}
 						objectFit={"cover"}
 						position={"absolute"}
@@ -117,8 +145,8 @@ export default function Home() {
 					></Image>
 				))}
 				<svg
-					height={"0"}
-					width={"0"}
+					height={0}
+					width={0}
 				>
 					<clipPath
 						id="dot"
@@ -127,9 +155,9 @@ export default function Home() {
 						{[...Array(elementCount)].map((_value, index) => (
 							<rect
 								key={index}
-								className="dot"
+								className={"dot"}
 								x={dotWidth * (index % grid[0])}
-								y={dotHeight * Math.floor(1 + index / grid[0])}
+								y={dotHeight * Math.floor(index / grid[0])}
 								height={1 + dotHeight}
 								width={1 + dotWidth}
 							/>
